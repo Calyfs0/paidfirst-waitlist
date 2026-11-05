@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PaidFirst - Order aaya. Payment nahi aaya. Early access</title>
+<meta name="description" content="A small app for Instagram and WhatsApp sellers: payment reminders, COD confirmation and order tracking in one place. Join the early access list. No payment now.">
+<meta name="theme-color" content="#FFC21A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Meta Pixel: paste your pixel snippet here if you create one -->
+<style>
+  :root{
+    color-scheme: light;
+    --ink:#11205C;
+    --ink-soft:#44508A;
+    --marigold:#FFC21A;
+    --tint:#FFF3C4;
+    --paper:#FFFFFF;
+    --rule:#C9D3F2;
+    --paid:#0E7C4A;
+    --unpaid:#C8283C;
+    --display:"Bricolage Grotesque", "Hind", system-ui, sans-serif;
+    --body:"Hind", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--body)}
+  img,svg{max-width:100%}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+  /* top bar */
+  .top{background:var(--marigold)}
+  .bar{display:flex;align-items:center;justify-content:space-between;padding-top:16px;padding-bottom:6px}
+  .logo{font:800 22px/1 var(--display);letter-spacing:-.02em}
+  .pill{font-size:14px;font-weight:600;border:2px solid var(--ink);padding:3px 12px;border-radius:999px}
+
+  /* hero */
+  .hero{background:var(--marigold);padding:18px 0 48px;--btn-bg:var(--ink);--btn-fg:var(--marigold);--field-bd:var(--ink)}
+  .hero-grid{display:grid;gap:30px}
+  h1{font:800 clamp(36px,8.5vw,54px)/1.06 var(--display);letter-spacing:-.035em;margin:10px 0 16px}
+  .lead{font-size:19px;max-width:30em;margin:0 0 22px}
+
+  /* signup (shared by hero and closing) */
+  .signup-wrap{max-width:30em}
+  .field{display:flex;align-items:stretch;background:#fff;border:2px solid var(--field-bd);border-radius:10px;overflow:hidden}
+  .field .cc{display:flex;align-items:center;padding:0 12px;font-weight:600;background:var(--tint);border-right:2px solid var(--field-bd);color:var(--ink)}
+  .field input{flex:1;min-width:0;border:0;padding:15px 12px;font:500 18px var(--body);color:var(--ink);background:#fff;outline-offset:-3px}
+  .btn{display:block;width:100%;margin-top:10px;padding:15px 18px;border:0;border-radius:10px;background:var(--btn-bg);color:var(--btn-fg);font:600 18px var(--body);cursor:pointer;min-height:52px}
+  .btn:active{transform:translateY(1px)}
+  .micro{font-size:14.5px;margin:10px 0 0;opacity:.85}
+  .msg{min-height:1.4em;margin:6px 0 0;font-weight:600;font-size:15px;color:var(--unpaid)}
+  .hp{position:absolute;left:-9999px;height:0;width:0;opacity:0}
+
+  /* step 2 + success */
+  .step2 h3,.done h3{font:800 24px/1.15 var(--display);letter-spacing:-.02em;margin:0 0 6px}
+  .step2 p.hint{margin:0 0 14px;font-size:15.5px}
+  .q{border:0;padding:0;margin:0 0 14px}
+  .q legend{font-weight:600;font-size:15.5px;padding:0;margin-bottom:6px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chips label{position:relative}
+  .chips input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .chips span{display:inline-block;padding:9px 14px;border:2px solid var(--field-bd);border-radius:999px;background:#fff;font-weight:500;font-size:15.5px;color:var(--ink)}
+  .chips input:checked + span{background:var(--ink);color:var(--marigold);border-color:var(--ink)}
+  .chips input:focus-visible + span{outline:3px solid var(--ink);outline-offset:3px}
+  .textq{width:100%;padding:12px;border:2px solid var(--field-bd);border-radius:10px;font:500 17px var(--body);color:var(--ink);background:#fff}
+  .skip{display:inline-block;margin-top:12px;background:none;border:0;padding:6px 0;font:500 15.5px var(--body);color:inherit;text-decoration:underline;cursor:pointer}
+  .done a{color:inherit;font-weight:600}
+
+  /* hero chat */
+  .chat-wrap{max-width:440px}
+  .chat{position:relative;background:var(--tint);border:2px solid var(--ink);border-radius:18px;padding:18px 16px 22px;display:flex;flex-direction:column;gap:10px;min-height:400px;overflow:hidden}
+  .b{max-width:82%;padding:9px 13px;font-size:16.5px;line-height:1.4;border-radius:14px}
+  .b.them{align-self:flex-start;background:#fff;border-bottom-left-radius:3px}
+  .b.me{align-self:flex-end;background:#CFEFDC;border-bottom-right-radius:3px}
+  .gap{align-self:center;font-size:14px;font-weight:600;background:#fff;border:1.5px dashed var(--ink-soft);padding:3px 12px;border-radius:999px}
+  .note-tag{align-self:center;font-size:14px;font-weight:600;background:var(--ink);color:var(--marigold);padding:5px 12px;border-radius:6px}
+  .stamp{position:absolute;right:16px;bottom:18px;font:800 46px/1 var(--display);letter-spacing:.02em;color:var(--paid);border:5px double var(--paid);padding:6px 16px;border-radius:6px;transform:rotate(-8deg);background:rgba(255,255,255,.55)}
+  .cap{font-size:14px;margin:10px 2px 0;opacity:.85}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes slam{0%{opacity:0;transform:scale(2.6) rotate(-20deg)}70%{opacity:1;transform:scale(.94) rotate(-8deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
+  /* JS arms the chat (hides items) and starts it when it scrolls into view. Without JS, everything shows. */
+  .chat.armed .b,.chat.armed .gap,.chat.armed .note-tag,.chat.armed .stamp{opacity:0}
+  .chat.armed.play .b,.chat.armed.play .gap,.chat.armed.play .note-tag{animation:rise .45s ease-out forwards;animation-delay:var(--d)}
+  .chat.armed.play .stamp{animation:slam .5s cubic-bezier(.2,1.4,.4,1) forwards;animation-delay:var(--d)}
+
+  /* sections */
+  .sec{padding:56px 0}
+  h2{font:800 clamp(28px,6vw,40px)/1.1 var(--display);letter-spacing:-.025em;margin:0 0 14px}
+  .sec p{max-width:36em}
+
+  /* khata ledger */
+  .ledger-sec{background:#fff}
+  .khata{width:100%;max-width:760px;border-collapse:collapse;margin-top:22px;background:#fff;border:2px solid var(--ink);position:relative}
+  .khata caption{text-align:left;font-weight:600;padding:0 0 8px;font-size:15px;color:var(--ink-soft)}
+  .khata th,.khata td{text-align:left;padding:12px 14px;border-bottom:1.5px solid var(--rule);vertical-align:top}
+  .khata thead th{background:var(--tint);border-bottom:2px solid var(--ink);font-weight:600;font-size:15px}
+  .khata td:first-child,.khata th:first-child{border-right:2px solid #E7A3AC;font-weight:600;width:22%}
+  .khata td.amt{white-space:nowrap;font-weight:600;text-align:right}
+  .khata th.amt{text-align:right}
+  .khata .bad{color:var(--unpaid)}
+  .khata tbody tr:last-child td{border-bottom:0}
+  .after{margin-top:16px}
+
+  /* steps + preview */
+  .how{background:var(--tint)}
+  .how-grid{display:grid;gap:34px;margin-top:24px}
+  .steps{list-style:none;margin:0;padding:0;counter-reset:s}
+  .steps li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:12px;padding:0 0 22px;position:relative}
+  .steps li::before{content:counter(s);width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--marigold);font:800 18px/36px var(--display);text-align:center}
+  .steps li:not(:last-child)::after{content:"";position:absolute;left:17px;top:40px;bottom:2px;width:2px;background:var(--ink);opacity:.25}
+  .steps b{display:block;font-size:18px}
+  .steps span{display:block;color:var(--ink-soft)}
+  .app{background:#fff;border:2px solid var(--ink);border-radius:22px;padding:14px;max-width:380px}
+  .app-h{font:800 18px var(--display);padding:4px 6px 10px;border-bottom:2px solid var(--ink);margin-bottom:6px}
+  .row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:11px 6px;border-bottom:1.5px solid var(--rule);align-items:center}
+  .row:last-of-type{border-bottom:0}
+  .row small{grid-column:1;color:var(--ink-soft);font-size:14px}
+  .st{grid-row:1 / span 2;grid-column:2;font:800 13px/1 var(--display);letter-spacing:.06em;border:2.5px solid currentColor;padding:6px 9px;border-radius:4px;transform:rotate(-4deg)}
+  .st.paid{color:var(--paid)} .st.unpaid{color:var(--unpaid)} .st.cod{color:var(--ink)}
+  .remind{grid-column:1 / -1;margin-top:6px;background:var(--ink);color:var(--marigold);border-radius:8px;padding:9px 12px;font-weight:600;font-size:15px;text-align:center}
+  .app-note{font-size:14px;margin:10px 4px 0;color:var(--ink-soft)}
+
+  /* audience + faq */
+  .two{display:grid;gap:34px}
+  details{border-top:2px solid var(--ink);padding:14px 0}
+  details:last-of-type{border-bottom:2px solid var(--ink)}
+  summary{font-weight:600;font-size:18px;cursor:pointer}
+  details p{margin:10px 0 0;color:var(--ink-soft)}
+
+  /* closing */
+  .closing{background:var(--ink);color:#fff;padding:60px 0 70px;--btn-bg:var(--marigold);--btn-fg:var(--ink);--field-bd:#fff}
+  .closing h2{color:#fff}
+  .closing .field .cc{color:var(--ink)}
+  .closing .msg{color:#FFB3BC}
+  .closing .skip{color:#fff}
+  .closing .chips span{border-color:#fff}
+
+  footer{background:var(--ink);color:#C9D3F2;padding:0 0 110px;font-size:14px}
+  footer .wrap{border-top:1px solid rgba(255,255,255,.2);padding-top:18px}
+  footer details{border:0;padding:6px 0}
+  footer summary{font-size:14px;font-weight:600}
+  footer details p{color:#C9D3F2}
+
+  /* sticky */
+  .sticky{position:fixed;left:0;right:0;bottom:0;background:var(--marigold);border-top:2px solid var(--ink);padding:10px 18px;z-index:10;transform:translateY(110%);transition:transform .25s ease}
+  .sticky.show{transform:none}
+  .sticky .btn{margin:0 auto;max-width:520px;background:var(--ink);color:var(--marigold)}
+
+  @media (max-width:520px){
+    .khata th,.khata td{padding:10px 8px;font-size:15.5px}
+    .khata td:first-child,.khata th:first-child{width:18%}
+    .khata td.amt{white-space:normal;width:84px}
+  }
+  @media (min-width:880px){
+    .hero-grid{grid-template-columns:1.05fr .95fr;align-items:center;gap:56px}
+    .how-grid{grid-template-columns:1fr 1fr;align-items:center}
+    .two{grid-template-columns:1fr 1fr}
+    .sticky{display:none}
+    footer{padding-bottom:40px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .b,.gap,.note-tag{animation:none;opacity:1}
+    .stamp{animation:none;opacity:1}
+    .sticky{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap bar">
+    <span class="logo">PaidFirst</span>
+    <span class="pill">Early access</span>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Order aaya.<br>Payment nahi aaya.</h1>
+      <p class="lead">A small app for Instagram and WhatsApp sellers. It reminds customers to pay, confirms COD orders before you ship, and keeps every order in one place.</p>
+      <div class="signup-wrap" data-signup>
+        <form class="signup" novalidate>
+          <label class="sr" for="ph-hero">WhatsApp number</label>
+          <div class="field"><span class="cc">+91</span><input id="ph-hero" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="WhatsApp number" maxlength="20"></div>
+          <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn" type="submit">Join the early access list</button>
+          <p class="micro">No payment now. Your number is only used for launch updates.</p>
+          <p class="msg" role="alert" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="chat" role="img" aria-label="Preview of an order chat: the customer does not pay, a reminder goes out, then the payment arrives.">
+        <div class="b them" style="--d:.5s">Di, ye kurti set bhej do 🙏</div>
+        <div class="b me" style="--d:1.4s">Pack kar diya! 1,299 rupaye UPI kar do</div>
+        <div class="gap" style="--d:2.3s">2 days later</div>
+        <div class="b me" style="--d:3s">Payment kab tak karogi?</div>
+        <div class="note-tag" style="--d:3.9s">Reminder in one tap</div>
+        <div class="b them" style="--d:4.8s">Kar diya ✅</div>
+        <div class="stamp" style="--d:5.7s">PAID</div>
+      </div>
+      <p class="cap">Preview: the flow we are building. The app is not launched yet.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec ledger-sec">
+  <div class="wrap">
+    <h2>Your khata, every week</h2>
+    <p>Even 2-3 orders like these a day cost you a lot of money and time every month.</p>
+    <table class="khata">
+      <caption>One week of orders (example)</caption>
+      <thead><tr><th scope="col">Customer</th><th scope="col">What happened</th><th scope="col" class="amt">Amount</th></tr></thead>
+      <tbody>
+        <tr><td>Priya</td><td>Sent the kurti set, still waiting for payment</td><td class="amt bad">₹1,299 pending</td></tr>
+        <tr><td>Rina</td><td>COD order came back, courier charge lost</td><td class="amt bad">₹140 lost</td></tr>
+        <tr><td>Meera</td><td>Paid or not? Have to dig through chats</td><td class="amt">?</td></tr>
+        <tr><td>Sana</td><td>Took an advance, can’t remember the balance</td><td class="amt">?</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec how">
+  <div class="wrap">
+    <h2>How PaidFirst will work</h2>
+    <p>This is planned. The app is still being built, so features may change.</p>
+    <div class="how-grid">
+      <ol class="steps">
+        <li><div><b>Add the order</b><span>Save the customer’s name, item and amount.</span></div></li>
+        <li><div><b>Remind about payment</b><span>Send the UPI payment message on WhatsApp in one tap.</span></div></li>
+        <li><div><b>Confirm COD first</b><span>Confirm the address and the order before dispatch, so fewer orders come back.</span></div></li>
+        <li><div><b>Paid and unpaid in one list</b><span>See who has paid and who hasn’t.</span></div></li>
+      </ol>
+      <div>
+        <div class="app" role="img" aria-label="Preview: today’s order list with paid and unpaid stamps">
+          <div class="app-h">Today’s orders</div>
+          <div class="row"><b>Priya</b><span class="st unpaid">UNPAID</span><small>Kurti set, 1,299</small><div class="remind">Send payment reminder</div></div>
+          <div class="row"><b>Rina</b><span class="st cod">COD OK</span><small>Jhumka set, 899</small></div>
+          <div class="row"><b>Meera</b><span class="st paid">PAID</span><small>Saree, 2,450</small></div>
+        </div>
+        <p class="app-note">Preview. The final app may look different.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap two">
+    <div>
+      <h2>Who it’s for</h2>
+      <p>Boutiques, jewellery, home bakeries, handmade and reselling. Anyone who sells on Instagram or WhatsApp and keeps chasing payments.</p>
+      <p>The planned price is about ₹299 per month. We will share the final price at launch. People on the list hear about launch first.</p>
+    </div>
+    <div>
+      <h2>Questions</h2>
+      <details><summary>Is the app available yet?</summary><p>No. It is still being built. When you join the list, we will message you on WhatsApp about testing and launch.</p></details>
+      <details><summary>Do I have to pay now?</summary><p>No. We are not taking any payment right now.</p></details>
+      <details><summary>How will my number be used?</summary><p>Only to send launch updates and ask for your feedback. We never sell it.</p></details>
+      <details><summary>There are free apps. How is this different?</summary><p>Some tools give you a basic order list. We are focusing on payment reminders and COD confirmation. Tell us what you need most and we will build that first.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="closing" id="join">
+  <div class="wrap">
+    <h2>Tell us what you need. We will build that first.</h2>
+    <div class="signup-wrap" data-signup>
+      <form class="signup" novalidate>
+        <label class="sr" for="ph-close">WhatsApp number</label>
+        <div class="field"><span class="cc">+91</span><input id="ph-close" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="WhatsApp number" maxlength="20"></div>
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn" type="submit">Join the early access list</button>
+        <p class="micro">No payment now. Your number is only used for launch updates.</p>
+        <p class="msg" role="alert" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>PaidFirst is a working name. This is an early-stage product that has not launched, so this page has no reviews or user counts.</p>
+    <details>
+      <summary>Privacy</summary>
+      <p>We collect your WhatsApp number and any answers you give. We use them only to send launch updates and improve the product. To have your data deleted, email chitrasagar2639@gmail.com.</p>
+    </details>
+  </div>
+</footer>
+
+<div class="sticky" id="sticky" aria-hidden="true">
+  <button class="btn" type="button" id="stickyBtn" tabindex="-1">Join the early access list</button>
+</div>
+
+<template id="tpl-step2">
+  <form class="step2" novalidate>
+    <h3>You’re on the list.</h3>
+    <p class="hint">Two quick questions (optional). They help us build what you need first.</p>
+    <div class="q">
+      <label class="sr" for="__ID__-sells">What do you sell?</label>
+      <input class="textq" id="__ID__-sells" name="sells" type="text" maxlength="80" placeholder="What do you sell? (e.g. kurtis, jewellery)">
+    </div>
+    <fieldset class="q"><legend>Orders per week?</legend>
+      <div class="chips">
+        <label><input type="radio" name="orders" value="Under 10"><span>Under 10</span></label>
+        <label><input type="radio" name="orders" value="10-30"><span>10-30</span></label>
+        <label><input type="radio" name="orders" value="30-100"><span>30-100</span></label>
+        <label><input type="radio" name="orders" value="100+"><span>100+</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="q"><legend>Biggest problem?</legend>
+      <div class="chips">
+        <label><input type="radio" name="problem" value="Payments do not arrive"><span>Payments don’t arrive</span></label>
+        <label><input type="radio" name="problem" value="COD orders come back"><span>COD orders come back</span></label>
+        <label><input type="radio" name="problem" value="Tracking orders"><span>Tracking orders</span></label>
+        <label><input type="radio" name="problem" value="Something else"><span>Something else</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="q"><legend>Would you pay ₹299 per month for this?</legend>
+      <div class="chips">
+        <label><input type="radio" name="pay" value="Yes"><span>Yes</span></label>
+        <label><input type="radio" name="pay" value="Maybe"><span>Maybe</span></label>
+        <label><input type="radio" name="pay" value="No"><span>No</span></label>
+      </div>
+    </fieldset>
+    <button class="btn" type="submit">Send answers</button>
+    <button class="skip" type="button" data-skip>Not now, just keep me on the list</button>
+  </form>
+</template>
+
+<template id="tpl-done">
+  <div class="done" role="status">
+    <h3>Thank you. You’re on the list.</h3>
+    <p class="hint">We will message you on WhatsApp when early access opens. Tell a seller friend too.</p>
+    <p><a data-share href="#">Share on WhatsApp</a></p>
+  </div>
+</template>
+
+<script>
+(function(){
+  /* ---- CONFIG: replace these after creating your Google Form (see SETUP.md) ---- */
+  var CONFIG = {
+    action: "https://docs.google.com/forms/d/e/1FAIpQLSewu0LqriOgTv1G-BIUeoLdyNb1chniYhqsaReyck1eVWgBFg/formResponse",
+    entries: {
+      phone:   "entry.1300473220",
+      sells:   "entry.1374767678",
+      orders:  "entry.1532793289",
+      problem: "entry.1807442407",
+      pay:     "entry.1788168302"
+    }
+  };
+
+  function configured(){ return CONFIG.action.indexOf("REPLACE") === -1; }
+
+  function send(data){
+    if(!configured()){
+      try{ console.warn("PaidFirst: Google Form not configured, nothing was saved.", data); }catch(e){}
+      return;
+    }
+    var body = new URLSearchParams();
+    Object.keys(data).forEach(function(k){
+      if(CONFIG.entries[k] && data[k]) body.append(CONFIG.entries[k], data[k]);
+    });
+    try{
+      fetch(CONFIG.action, {method:"POST", mode:"no-cors", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:body});
+    }catch(e){}
+  }
+
+  function normPhone(v){
+    var d = (v || "").replace(/\D/g, "");
+    if(d.length === 12 && d.indexOf("91") === 0) d = d.slice(2);
+    if(d.length === 11 && d.charAt(0) === "0") d = d.slice(1);
+    return /^[6-9]\d{9}$/.test(d) ? "+91" + d : null;
+  }
+
+  var uid = 0;
+
+  function showDone(wrap){
+    var node = document.getElementById("tpl-done").content.cloneNode(true);
+    var share = node.querySelector("[data-share]");
+    var text = "A payment and COD app for Instagram and WhatsApp sellers is being built. Early access list: " + location.href.split("#")[0];
+    share.href = "https://wa.me/?text=" + encodeURIComponent(text);
+    share.target = "_blank"; share.rel = "noopener";
+    wrap.innerHTML = "";
+    wrap.appendChild(node);
+  }
+
+  function showStep2(wrap, phone){
+    var html = document.getElementById("tpl-step2").innerHTML.split("__ID__").join("s" + (++uid));
+    wrap.innerHTML = html;
+    var f = wrap.querySelector("form");
+    f.addEventListener("submit", function(e){
+      e.preventDefault();
+      var fd = new FormData(f);
+      send({
+        phone: phone,
+        sells: (fd.get("sells") || "").toString().trim(),
+        orders: fd.get("orders"),
+        problem: fd.get("problem"),
+        pay: fd.get("pay")
+      });
+      showDone(wrap);
+    });
+    f.querySelector("[data-skip]").addEventListener("click", function(){ showDone(wrap); });
+    var h = f.querySelector("h3"); if(h){ h.setAttribute("tabindex","-1"); h.focus(); }
+  }
+
+  document.querySelectorAll("[data-signup]").forEach(function(wrap){
+    var form = wrap.querySelector("form.signup");
+    var msg = form.querySelector(".msg");
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      if(form.elements.website && form.elements.website.value){ return; } /* bot trap */
+      var phone = normPhone(form.elements.phone.value);
+      if(!phone){
+        msg.textContent = "Enter a 10-digit mobile number (like 98765 43210).";
+        form.elements.phone.focus();
+        return;
+      }
+      msg.textContent = "";
+      send({phone: phone});
+      showStep2(wrap, phone);
+    });
+  });
+
+  /* sticky button on mobile: show once the hero form has scrolled out of view */
+  var sticky = document.getElementById("sticky");
+  var stickyBtn = document.getElementById("stickyBtn");
+  var heroForm = document.querySelector(".hero [data-signup]");
+  var closing = document.getElementById("join");
+  var heroVisible = true, closingVisible = false;
+  function update(){
+    var show = !heroVisible && !closingVisible;
+    sticky.classList.toggle("show", show);
+    sticky.setAttribute("aria-hidden", show ? "false" : "true");
+    stickyBtn.tabIndex = show ? 0 : -1;
+  }
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(function(es){ heroVisible = es[0].isIntersecting; update(); }).observe(heroForm);
+    new IntersectionObserver(function(es){ closingVisible = es[0].isIntersecting; update(); }).observe(closing);
+  }
+  /* hero chat: play once, when it is actually on screen */
+  var chat = document.querySelector(".chat");
+  var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(chat && !reduceMotion){
+    chat.classList.add("armed");
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(es){
+        if(es[0].isIntersecting){ chat.classList.add("play"); io.disconnect(); }
+      }, {threshold: 0.6});
+      io.observe(chat);
+    } else {
+      chat.classList.add("play");
+    }
+  }
+
+  stickyBtn.addEventListener("click", function(){
+    var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    heroForm.scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"center"});
+    setTimeout(function(){ var i = heroForm.querySelector("input[name=phone]"); if(i) i.focus({preventScroll:true}); }, reduce ? 0 : 450);
+  });
+})();
+</script>
+</body>
+</html>
